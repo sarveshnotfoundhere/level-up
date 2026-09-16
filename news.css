@@ -1,0 +1,22 @@
+/* LEVEL UP NEWSROOM */
+.news-hero{max-width:1180px;margin:0 auto;padding:120px 28px 78px;border-bottom:1px solid #242424}
+.news-hero h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(62px,9vw,142px);line-height:.86;letter-spacing:-.055em;margin:24px 0 34px;font-weight:700}
+.news-hero h1 em{color:#39FF14}
+.news-hero p{max-width:650px;color:#aaa;font-size:18px;line-height:1.7}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#39FF14;font-weight:700}
+.news-controls{max-width:1180px;margin:0 auto;padding:28px;display:flex;justify-content:space-between;gap:25px;align-items:center;border-bottom:1px solid #242424}
+.news-search-wrap{position:relative;min-width:320px}.news-search-wrap input{width:100%;background:#090909;border:0;border-bottom:1px solid #555;padding:14px 32px 14px 0;color:#fff;font:500 14px Inter,sans-serif;outline:none}.news-search-wrap span{position:absolute;right:4px;top:12px;color:#777}
+.news-filters{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.news-filters button{background:none;color:#777;border:0;padding:9px 11px;font:700 10px Inter,sans-serif;letter-spacing:.1em;cursor:pointer}.news-filters button.active,.news-filters button:hover{color:#39FF14}
+.news-layout{max-width:1180px;margin:0 auto;padding:48px 28px 90px;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:55px}
+.section-head{display:flex;justify-content:space-between;padding-bottom:13px;border-bottom:1px solid #333;color:#777;font:700 10px Inter,sans-serif;letter-spacing:.14em}
+.news-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
+.news-card{padding:28px 0 32px;border-bottom:1px solid #222;cursor:pointer}
+.news-card:hover h3{color:#39FF14}.news-card .meta{display:flex;justify-content:space-between;color:#666;font-size:10px;letter-spacing:.08em;margin-bottom:18px}.news-card h3{font-family:"Playfair Display",Georgia,serif;font-size:29px;line-height:1.05;margin:0 0 14px;transition:.2s}.news-card p{color:#999;font-size:14px;line-height:1.6;margin:0}.news-card .tag{color:#39FF14;font-weight:700}
+.market-list{margin-top:14px}.market-item{display:flex;justify-content:space-between;align-items:center;padding:17px 0;border-bottom:1px solid #222}.market-item strong{font-size:13px}.market-item span{font-size:11px;color:#999}.market-item .up{color:#39FF14}.market-item .down{color:#ff7676}.data-note{font-size:11px;line-height:1.6;color:#666;margin-top:20px}
+.news-explainer{max-width:1180px;margin:0 auto;padding:0 28px 90px}.explainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.explainer-grid article{padding:32px 28px 25px 0;border-bottom:1px solid #222}.explainer-grid article+article{padding-left:28px;border-left:1px solid #222}.explainer-grid span{color:#39FF14;font:700 10px Inter,sans-serif}.explainer-grid h2{font-family:"Playfair Display",Georgia,serif;font-size:27px;line-height:1.05;margin:20px 0 15px}.explainer-grid p{color:#999;font-size:13px;line-height:1.7}
+.source-strip{border-top:1px solid #242424;border-bottom:1px solid #242424;max-width:1180px;margin:0 auto 80px;padding:24px 28px;display:flex;justify-content:space-between;gap:30px}.source-strip span{display:block;color:#777;font-size:9px;letter-spacing:.15em;margin-bottom:7px}.source-strip strong{font-size:12px;font-weight:500}.source-strip p{color:#666;font-size:11px;margin:0;max-width:300px;line-height:1.5}
+.site-footer{border-top:1px solid #222;padding:35px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.site-footer p,.site-footer a{color:#777;font-size:11px}.site-footer a{color:#39FF14}
+@media(max-width:850px){.news-controls{display:block}.news-filters{justify-content:flex-start;margin-top:20px}.news-layout{grid-template-columns:1fr}.news-grid{grid-template-columns:1fr}.explainer-grid{grid-template-columns:1fr}.explainer-grid article+article{padding-left:0;border-left:0}.source-strip,.site-footer{display:block}.source-strip p{margin-top:15px}.site-footer>*{margin:12px 0}.news-hero{padding-top:80px}.news-search-wrap{min-width:0}}
+
+.story-link{display:inline-block;margin-top:18px;color:#39FF14;font:700 9px Inter,sans-serif;letter-spacing:.13em}
+.live-connected .data-note:before{content:"● LIVE CONNECTION ACTIVE  ";color:#39FF14;font-weight:700}

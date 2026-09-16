@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newsroom — LEVEL UP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="news.css">
+</head>
+<body>
+<div class="ticker"><div class="ticker-track" id="tickerTrack">LEVEL UP NEWSROOM &nbsp; • &nbsp; ACCOUNTING &nbsp; • &nbsp; AI &nbsp; • &nbsp; FINTECH &nbsp; • &nbsp; MARKETS &nbsp; • &nbsp; DIGITAL FINANCE &nbsp; • &nbsp; LIVE INTELLIGENCE</div></div>
+
+<header class="site-header">
+  <a class="brand" href="index.html">LEVEL<span>UP</span></a>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="case-studies.html">CASE STUDIES</a>
+    <a class="active" href="news.html">NEWSROOM</a>
+  </nav>
+  <button class="search-trigger" id="openSearch" aria-label="Open search">SEARCH ↗</button>
+</header>
+
+<main>
+<section class="news-hero">
+  <div class="eyebrow">LEVEL UP / NEWSROOM / 2026</div>
+  <h1>The financial<br><em>world, updated.</em></h1>
+  <p>Reporting and context across accounting, artificial intelligence, fintech, banking and markets. Demo stories below are structured for live API integration.</p>
+</section>
+
+<section class="news-controls">
+  <div class="news-search-wrap">
+    <input id="newsSearch" type="search" placeholder="Search the newsroom…" autocomplete="off">
+    <span>⌕</span>
+  </div>
+  <div class="news-filters" id="newsFilters">
+    <button class="active" data-filter="ALL">ALL</button>
+    <button data-filter="ACCOUNTING">ACCOUNTING</button>
+    <button data-filter="AI">AI</button>
+    <button data-filter="FINTECH">FINTECH</button>
+    <button data-filter="BANKING">BANKING</button>
+    <button data-filter="MARKETS">MARKETS</button>
+  </div>
+</section>
+
+<section class="news-layout">
+  <div>
+    <div class="section-head"><span>01 / LATEST</span><span id="storyCount">0 STORIES</span></div>
+    <div id="newsGrid" class="news-grid"></div>
+  </div>
+
+  <aside class="news-aside">
+    <div class="section-head"><span>MARKET PULSE</span><span>DEMO</span></div>
+    <div id="marketPulse" class="market-list"></div>
+    <p class="data-note">Snapshot data shown until a licensed live endpoint is connected. See <b>LIVE_DATA_SETUP.md</b> for the secure integration path.</p>
+  </aside>
+</section>
+
+<section class="news-explainer">
+  <div class="section-head"><span>02 / WHY IT MATTERS</span><span>EDITORIAL</span></div>
+  <div class="explainer-grid">
+    <article><span>01</span><h2>AI moves from experiment to workflow.</h2><p>Accounting teams are increasingly testing AI for reconciliation, close, audit support, research and financial operations. The key questions are governance, verification and measurable process impact.</p></article>
+    <article><span>02</span><h2>Payments are becoming infrastructure.</h2><p>Digital payments are evolving beyond checkout. APIs, embedded finance and agentic systems are changing how businesses move, reconcile and report money.</p></article>
+    <article><span>03</span><h2>Cloud finance changes the operating model.</h2><p>Cloud accounting connects reporting, collaboration, automation and analytics. The shift is as much about process design as software migration.</p></article>
+  </div>
+</section>
+
+<section class="source-strip">
+  <div><span>RESEARCH SOURCES</span><strong>Reuters · BIS · Financial Times · Central banks · Company filings</strong></div>
+  <p>LEVEL UP separates reported facts from analysis and clearly labels demo data.</p>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="brand">LEVEL<span>UP</span></div>
+  <p>Financial intelligence for the next generation.</p>
+  <a href="case-studies.html">EXPLORE CASE STUDIES ↗</a>
+</footer>
+
+<dialog id="searchDialog" class="search-dialog">
+  <button id="closeSearch" class="dialog-close">×</button>
+  <div class="eyebrow">LEVEL UP / SEARCH</div>
+  <h2>Search the newsroom.</h2>
+  <input id="globalSearch" type="search" placeholder="Try AI, UPI, accounting…">
+  <div id="searchResults"></div>
+</dialog>
+
+<script src="news.js"></script>
+</body>
+</html>

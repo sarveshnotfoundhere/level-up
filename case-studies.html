@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Studies — LEVEL UP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="case-studies.css">
+</head>
+<body>
+<div class="ticker"><span class="ticker-label">● LEVEL UP</span><div class="ticker-track" id="tickerTrack"></div></div>
+<header class="site-header">
+<a class="brand" href="index.html">LEVEL<span>UP</span></a>
+<nav>
+<a href="index.html">Home</a><a href="index.html#accounting">Accounting</a><a href="index.html#ai">AI</a><a href="index.html#fintech">FinTech</a><a class="active-nav" href="case-studies.html">Case Studies</a><a href="index.html#news">News</a><a href="index.html#insights">Insights</a>
+</nav>
+<button class="search-btn" id="openSearch">⌕</button>
+</header>
+
+<main>
+<section class="case-hero">
+<div class="eyebrow">04 — CASE STUDIES / RESEARCH LIBRARY</div>
+<h1>The real-world <em>laboratory.</em></h1>
+<p>Explore documented applications of artificial intelligence, accounting technology, automation, blockchain and financial technology across real organisations.</p>
+<div class="case-stat-row">
+<div><strong id="caseCount">30</strong><span>CASE STUDIES</span></div>
+<div><strong>07</strong><span>TECHNOLOGY AREAS</span></div>
+<div><strong>∞</strong><span>RESEARCH POSSIBILITIES</span></div>
+</div>
+</section>
+
+<section class="case-library">
+<div class="library-top">
+<div><div class="eyebrow">EXPLORE THE LIBRARY</div><h2>Find a case.</h2></div>
+<div class="case-search"><input type="search" id="caseSearch" placeholder="Search company, technology or topic..."></div>
+</div>
+<div class="case-filters" id="caseFilters"></div>
+<div class="case-library-grid" id="caseLibraryGrid"></div>
+</section>
+
+<section class="featured-case">
+<div class="eyebrow">CURRENT RESEARCH NOTE</div>
+<div class="featured-layout">
+<div>
+<div class="featured-number">01</div>
+<h2>AI × <em>financial services.</em></h2>
+<p>AI is moving from experimentation into financial research, accounting workflows, risk analysis, document processing and customer-facing systems. Recent developments also show a growing focus on governance, auditability and human oversight.</p>
+<a class="button" href="#research">Read the research note <span>↗</span></a>
+</div>
+<div class="featured-data">
+<div><span>TECHNOLOGY</span><strong>Artificial Intelligence</strong></div>
+<div><span>SECTOR</span><strong>Financial Services</strong></div>
+<div><span>APPLICATION</span><strong>Analysis · Automation · Risk</strong></div>
+<div><span>LEVEL UP FOCUS</span><strong>Accounting & Finance Impact</strong></div>
+</div>
+</div>
+</section>
+
+<section class="research-note" id="research">
+<div class="eyebrow">RESEARCH NOTE · SEPTEMBER 2026</div>
+<h2>AI is changing the <em>finance workflow.</em></h2>
+<div class="research-columns">
+<div><h3>What is changing?</h3><p>Financial institutions and accounting organisations are increasingly applying AI to document processing, research, transaction analysis, fraud detection, reconciliation, forecasting and customer service. Central-bank and industry commentary also highlights the importance of understanding the specific use case, managing model risk and maintaining accountability.</p></div>
+<div><h3>What does it mean for accounting?</h3><p>The most immediate effect is not simply replacing a task. AI can change where human attention is spent: routine extraction and matching can become more automated, while review, judgement, controls, exception handling and interpretation become more important.</p></div>
+</div>
+<div class="source-box">
+<strong>Selected research sources</strong>
+<a href="https://www.bis.org/speeches/20260520-regulation-and-supervision-financial-sector-age-artificial-intelligence" target="_blank">BIS — Regulation and supervision of AI in the financial sector ↗</a>
+<a href="https://www.bis.org/speeches/20260505-artificial-intelligence-financial-system" target="_blank">Federal Reserve / BIS-hosted speech — AI in the banking system ↗</a>
+<a href="https://www.reuters.com/business/openai-launches-chatgpt-financial-services-industry-2026-09-10/" target="_blank">Reuters — AI product for financial services, 10 Sep 2026 ↗</a>
+</div>
+</section>
+</main>
+
+<footer><div class="brand">LEVEL<span>UP</span></div><p>Accounting × AI × FinTech</p><span>ACADEMIC PROJECT · 2026</span></footer>
+
+<dialog id="searchDialog">
+<button class="close" id="closeSearch">×</button>
+<div class="eyebrow">SEARCH LEVEL UP</div>
+<input id="globalSearch" type="search" placeholder="AI, blockchain, fintech, accounting...">
+<div id="searchResults"></div>
+</dialog>
+<script src="case-studies.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+const labels=["APR 26","MAY 26","JUN 26","JUL 26","AUG 26"];
+const values=[22346.80,23201.93,22716.07,23658.35,24508.96];
+new Chart(document.getElementById("upiChart"),{type:"line",data:{labels,datasets:[{data:values,borderColor:"#39FF14",backgroundColor:"rgba(57,255,20,.07)",fill:true,tension:.32,pointRadius:3,pointBackgroundColor:"#39FF14"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toLocaleString()} million transactions`}}},scales:{x:{grid:{display:false},ticks:{color:"#666",font:{size:10}}},y:{grid:{color:"#1e1e1e"},ticks:{color:"#666",font:{size:10},callback:v=>`${(v/1000).toFixed(0)}B`}}}}});
