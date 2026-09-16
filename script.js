@@ -32,12 +32,12 @@ const cases = [
 ];
 
 const news = [
-["AI","AI adoption is reshaping finance-team workflows","AI in finance is moving beyond experimentation into document processing, analysis, workflow automation and decision support.","DEMO FEED · REPLACE WITH API"],
-["FINTECH","Digital payments continue to expand financial infrastructure","Payment platforms are increasingly becoming programmable infrastructure for businesses and consumers.","DEMO FEED · REPLACE WITH API"],
-["ACCOUNTING","Cloud accounting is becoming an integrated data layer","Modern accounting platforms connect transactions, reporting, payroll, payments and analytics.","DEMO FEED · REPLACE WITH API"],
-["BLOCKCHAIN","Distributed ledgers remain relevant to financial infrastructure","Institutional experiments continue around tokenisation, settlement, trade and digital assets.","DEMO FEED · REPLACE WITH API"],
-["REGTECH","Compliance technology is becoming increasingly data-driven","KYC, AML, monitoring and regulatory reporting are increasingly supported by automation and analytics.","DEMO FEED · REPLACE WITH API"],
-["AI","The next finance interface may be conversational","AI assistants can help users query financial information, explain variances and accelerate routine analysis.","DEMO FEED · REPLACE WITH API"]
+["AI","AI adoption is reshaping finance-team workflows","AI in finance is moving beyond experimentation into document processing, analysis, workflow automation and decision support.","LEVEL UP"],
+["FINTECH","Digital payments continue to expand financial infrastructure","Payment platforms are increasingly becoming programmable infrastructure for businesses and consumers.","LEVEL UP"],
+["ACCOUNTING","Cloud accounting is becoming an integrated data layer","Modern accounting platforms connect transactions, reporting, payroll, payments and analytics.","LEVEL UP"],
+["BLOCKCHAIN","Distributed ledgers remain relevant to financial infrastructure","Institutional experiments continue around tokenisation, settlement, trade and digital assets.","LEVEL UP"],
+["REGTECH","Compliance technology is becoming increasingly data-driven","KYC, AML, monitoring and regulatory reporting are increasingly supported by automation and analytics.","LEVEL UP"],
+["AI","The next finance interface may be conversational","AI assistants can help users query financial information, explain variances and accelerate routine analysis.","LEVEL UP"]
 ];
 
 const tickerItems = [
@@ -73,7 +73,7 @@ filters.addEventListener("click",e=>{
 document.getElementById("caseSearch").addEventListener("input",renderCases);
 renderCases();
 
-document.getElementById("newsGrid").innerHTML=news.map((n,i)=>`
+document.getElementById("newsGrid").innerHTML=news.map(n=>`
 <article class="news-card"><div class="tag">${n[0]}</div><h3>${n[1]}</h3><p>${n[2]}</p><small>${n[3]}</small></article>`).join("");
 
 const dialog=document.getElementById("searchDialog");
@@ -88,14 +88,6 @@ globalSearch.addEventListener("input",()=>{
   result.innerHTML=hits.map(c=>`<div class="result"><strong>${c[1]}</strong><small>${c[2]} · ${c[4]} · ${c[5]}</small></div>`).join("") || `<p style="color:#777">No results.</p>`;
 });
 
-// Real-time integration hook:
-// Replace the demo news array with a request to your licensed news provider.
-// Example pattern:
-// fetch("/api/news").then(r=>r.json()).then(data => { /* render data */ });
-// Never put a private API key directly in this browser-side file.
-
-
-// V6 scroll-reveal: restrained editorial motion.
 const revealTargets = document.querySelectorAll(".section,.dark-section,.case-section,.news-section,.market-section,.insights,.feature");
 revealTargets.forEach(el=>el.classList.add("reveal"));
 const revealObserver = new IntersectionObserver(entries=>{
@@ -103,5 +95,4 @@ const revealObserver = new IntersectionObserver(entries=>{
 },{threshold:.08});
 revealTargets.forEach(el=>revealObserver.observe(el));
 
-// Make homepage news cards point to the dedicated newsroom.
 document.querySelectorAll("#newsGrid .news-card").forEach(card=>card.addEventListener("click",()=>window.location.href="news.html"));
