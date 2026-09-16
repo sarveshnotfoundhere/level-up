@@ -1,17 +1,30 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+export default async function handler(request) {
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "content-type": "application/json" }
+    });
   }
 
   try {
-    const { message } = req.body || {};
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Message is required" });
+    const body = await request.json().catch(() => ({}));
+    const message = typeof body.message === "string" ? body.message.trim() : "";
+
+    if (!message) {
+      return new Response(JSON.stringify({ error: "Message is required" }), {
+        status: 400,
+        headers: { "content-type": "application/json" }
+      });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "OPENAI_API_KEY is not configured" });
+      return new Response(JSON.stringify({
+        error: "OPENAI_API_KEY is not configured in this Vercel deployment"
+      }), {
+        status: 500,
+        headers: { "content-type": "application/json" }
+      });
     }
 
     const response = await fetch("https://api.openai.com/v1/responses", {
@@ -22,24 +35,42 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-5-mini",
-        instructions: "You are LEVEL UP AI, a concise financial intelligence assistant. Answer questions about accounting, finance, fintech, financial technology, AI in finance, audit, markets and related academic topics. Give clear, accurate explanations. When a question asks for current facts you do not have verified data for, say so rather than inventing figures. Keep answers useful for a university student and use headings or bullets only when they improve readability.",
+        instructions: "You are LEVEL UP AI, a financial intelligence and accounting technology assistant for university students. Answer questions about accounting, finance, fintech, AI in finance, audit, financial technology and related academic topics. Be accurate, clear and practical. Do not invent current figures or claim live information unless provided in the prompt. Explain concepts with examples when useful.",
         input: message
       })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      return res.status(response.status).json({
-        error: data?.error?.message || "OpenAI request failed"
+      return new Response(JSON.stringify({
+        error: data?.error?.message || `OpenAI request failed (${response.status})`
+      }), {
+        status: response.status,
+        headers: { "content-type": "application/json" }
       });
     }
 
-    const answer = data.output_text || data.output?.map(item =>
-      item.content?.map(part => part.text || "").join("") || ""
-    ).join("").trim();
+    const answer = typeof data.output_text === "string" && data.output_text.trim()
+      ? data.output_text.trim()
+      : (data.output || [])
+          .flatMap(item => Array.isArray(item.content) ? item.content : [])
+          .map(part => part?.text || "")
+          .join("")
+          .trim();
 
-    return res.status(200).json({ answer: answer || "No answer returned." });
+    return new Response(JSON.stringify({
+      answer: answer || "No answer returned from OpenAI."
+    }), {
+      status: 200,
+      headers: { "content-type": "application/json" }
+    });
   } catch (error) {
-    return res.status(500).json({ error: "AI service error" });
+    return new Response(JSON.stringify({
+      error: error?.message || "AI service error"
+    }), {
+      status: 500,
+      headers: { "content-type": "application/json" }
+    });
   }
 }
