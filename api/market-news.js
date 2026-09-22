@@ -16,22 +16,31 @@ export default async function handler(req, res) {
       '(accounting OR fintech OR banking OR audit OR "digital payments" OR "artificial intelligence" OR markets OR finance)'
     );
 
-    const today = new Date();
-    const from = new Date(today.getTime() - 24 * 60 * 60 * 1000).toISOString();
-    const url = `https://newsapi.org/v2/everything?q=${query}&from=${encodeURIComponent(from)}&language=en&sortBy=publishedAt&pageSize=50`;
+    const everythingUrl = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=50`;
+    const headlinesUrl = `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=50`;
 
-    const upstream = await fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Api-Key": apiKey,
-        "X-No-Cache": "true",
-        "Accept": "application/json"
-      },
-      signal: controller.signal,
-      cache: "no-store"
-    });
+    const request = async (url) => {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-Api-Key": apiKey,
+          "X-No-Cache": "true",
+          "Accept": "application/json"
+        },
+        signal: controller.signal,
+        cache: "no-store"
+      });
+      const body = await response.json().catch(() => ({}));
+      return { response, body };
+    };
 
-    const data = await upstream.json().catch(() => ({}));
+    let { response: upstream, body: data } = await request(headlinesUrl);
+
+    if (!upstream.ok || data.status !== "ok" || !Array.isArray(data.articles) || !data.articles.length) {
+      const fallback = await request(everythingUrl);
+      upstream = fallback.response;
+      data = fallback.body;
+    }
 
     if (!upstream.ok || data.status !== "ok") {
       return res.status(upstream.ok ? 502 : upstream.status).json({
