@@ -17,6 +17,16 @@ export default async function handler(request) {
       });
     }
 
+    const commercePattern = /\b(accounting|accountancy|finance|financial|fintech|banking|bank|economics|economic|commerce|business|tax|taxation|audit|auditing|investment|investing|stock market|market|capital|credit|debit|insurance|upi|payment|payments|blockchain|cryptocurrency|crypto|budget|budgeting|revenue|profit|loss|balance sheet|income statement|cash flow|ledger|bookkeeping|bookkeeping|erp|rpa|regtech|wealthtech|corporate finance|financial accounting|cost accounting|management accounting|microeconomics|macroeconomics|entrepreneurship|supply chain|trade|gst|tally|cma|ca foundation|chartered accountant)\b/i;
+    if (!commercePattern.test(message)) {
+      return new Response(JSON.stringify({
+        error: "I’m the LEVEL UP Commerce Desk. Please ask a question related to commerce, accounting, finance, economics, business, taxation, banking, fintech or related fields."
+      }), {
+        status: 422,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return new Response(JSON.stringify({
