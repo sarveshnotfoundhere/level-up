@@ -14,18 +14,23 @@ export default async function handler(request) {
     });
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
     const query = encodeURIComponent(
-      '(accounting OR fintech OR "artificial intelligence" OR "financial technology" OR banking OR "digital payments" OR audit)'
+      'accounting OR fintech OR "artificial intelligence" OR banking OR "digital payments" OR audit'
     );
 
-    const url = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=30`;
+    const url = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=20`;
 
     const upstream = await fetch(url, {
+      method: "GET",
       headers: {
         "X-Api-Key": apiKey,
         "Accept": "application/json"
       },
+      signal: controller.signal,
       cache: "no-store"
     });
 
@@ -41,18 +46,15 @@ export default async function handler(request) {
     }
 
     const news = (data.articles || [])
-      .filter(article => article?.title && article?.url)
+      .filter(article => article?.title && article?.url && article.title !== "[Removed]")
       .map(article => ({
-        tag: classify(article.title + " " + (article.description || "")),
+        tag: classify(`${article.title} ${article.description || ""}`),
         source: article.source?.name || "NEWS SOURCE",
         time: formatDate(article.publishedAt),
-        publishedAt: article.publishedAt || "",
         title: cleanTitle(article.title),
         summary: article.description || "Latest development in finance, accounting and financial technology.",
-        url: article.url,
-        image: article.urlToImage || ""
+        url: article.url
       }))
-      .filter(article => article.title && article.title !== "[Removed]")
       .slice(0, 20);
 
     return new Response(JSON.stringify({
@@ -63,16 +65,20 @@ export default async function handler(request) {
       status: 200,
       headers: {
         "content-type": "application/json",
-        "cache-control": "no-store, max-age=0"
+        "cache-control": "no-store"
       }
     });
   } catch (error) {
-    return new Response(JSON.stringify({
-      error: error?.message || "News service error"
-    }), {
-      status: 500,
+    const message = error?.name === "AbortError"
+      ? "News provider timed out"
+      : (error?.message || "News service error");
+
+    return new Response(JSON.stringify({ error: message }), {
+      status: 502,
       headers: { "content-type": "application/json" }
     });
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -86,9 +92,7 @@ function classify(text) {
 }
 
 function cleanTitle(title) {
-  return String(title || "")
-    .replace(/\s*[-|]\s*[^-|]{1,80}$/,"")
-    .trim();
+  return String(title || "").trim();
 }
 
 function formatDate(value) {
