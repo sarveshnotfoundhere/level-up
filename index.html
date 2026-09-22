@@ -101,6 +101,27 @@
         <div><span>COMPUTER VISION</span><strong>Invoice & document extraction</strong></div>
         <div><span>NLP</span><strong>Contracts & regulatory research</strong></div>
       </div>
+      <div class="ai-chat-panel" aria-label="LEVEL UP Commerce AI assistant">
+        <div class="ai-chat-header">
+          <div>
+            <div class="eyebrow">LEVEL UP / AI DESK</div>
+            <h3>Ask the <em>Commerce Desk.</em></h3>
+          </div>
+          <span class="ai-chat-status">COMMERCE ONLY</span>
+        </div>
+        <p class="ai-chat-intro">Ask about accounting, economics, finance, business, taxation, banking, fintech, auditing, markets or commerce technology.</p>
+        <div class="ai-chat-messages" id="aiChatMessages" aria-live="polite">
+          <div class="ai-message ai-message-bot">
+            <span class="ai-message-label">LEVEL UP AI</span>
+            <p>Ask me anything related to commerce. I will keep the conversation focused on business, finance, accounting and related fields.</p>
+          </div>
+        </div>
+        <form class="ai-chat-form" id="aiChatForm">
+          <input id="aiChatInput" type="text" maxlength="1200" autocomplete="off" placeholder="Ask a commerce question…" aria-label="Ask a commerce question" required>
+          <button type="submit">ASK ↗</button>
+        </form>
+        <div class="ai-chat-note">Questions outside commerce are automatically filtered.</div>
+      </div>
     </section>
 
     <section class="section" id="fintech">
@@ -158,5 +179,6 @@
   </dialog>
 
   <script src="script.js"></script>
+  <script src="ai-chat.js"></script>
 </body>
 </html>
