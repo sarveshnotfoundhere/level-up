@@ -31,7 +31,7 @@ const cases = [
 ["30","Stripe","Embedded Finance","Financial infrastructure APIs extending payments into broader software ecosystems.","FINTECH","PAYMENTS"]
 ];
 
-const news = [
+const homepageNews = [
 ["AI","AI adoption is reshaping finance-team workflows","AI in finance is moving beyond experimentation into document processing, analysis, workflow automation and decision support.","LEVEL UP"],
 ["FINTECH","Digital payments continue to expand financial infrastructure","Payment platforms are increasingly becoming programmable infrastructure for businesses and consumers.","LEVEL UP"],
 ["ACCOUNTING","Cloud accounting is becoming an integrated data layer","Modern accounting platforms connect transactions, reporting, payroll, payments and analytics.","LEVEL UP"],
@@ -73,8 +73,32 @@ filters.addEventListener("click",e=>{
 document.getElementById("caseSearch").addEventListener("input",renderCases);
 renderCases();
 
-document.getElementById("newsGrid").innerHTML=news.map(n=>`
-<article class="news-card"><div class="tag">${n[0]}</div><h3>${n[1]}</h3><p>${n[2]}</p><small>${n[3]}</small></article>`).join("");
+function renderHomepageNews(rows){
+  const newsGrid=document.getElementById("newsGrid");
+  if(!newsGrid)return;
+  newsGrid.innerHTML=rows.map(n=>`
+    <article class="news-card">
+      <div class="tag">${n.tag||n[0]}</div>
+      <h3>${n.title||n[1]}</h3>
+      <p>${n.summary||n[2]}</p>
+      ${n.source ? `<small>${n.source} · ${n.time||"LATEST"}</small>` : ""}
+    </article>`).join("");
+  document.querySelectorAll("#newsGrid .news-card").forEach(card=>card.addEventListener("click",()=>window.location.href="news.html"));
+}
+renderHomepageNews(homepageNews.map(n=>({tag:n[0],title:n[1],summary:n[2],source:"LEVEL UP"})));
+
+async function loadHomepageNews(){
+  try{
+    const res=await fetch("/api/market-news",{headers:{Accept:"application/json"}});
+    if(!res.ok)throw new Error("News endpoint unavailable");
+    const data=await res.json();
+    if(Array.isArray(data.news)&&data.news.length) renderHomepageNews(data.news.slice(0,6));
+  }catch(err){
+    console.warn("LEVEL UP homepage news:",err.message);
+  }
+}
+loadHomepageNews();
+setInterval(loadHomepageNews,300000);
 
 const dialog=document.getElementById("searchDialog");
 document.getElementById("openSearch").onclick=()=>dialog.showModal();
@@ -94,5 +118,3 @@ const revealObserver = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");revealObserver.unobserve(entry.target)}})
 },{threshold:.08});
 revealTargets.forEach(el=>revealObserver.observe(el));
-
-document.querySelectorAll("#newsGrid .news-card").forEach(card=>card.addEventListener("click",()=>window.location.href="news.html"));
