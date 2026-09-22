@@ -16,6 +16,13 @@ export default async function handler(req, res) {
       '(accounting OR fintech OR banking OR audit OR "digital payments" OR "artificial intelligence" OR markets OR finance)'
     );
 
+    const categoryUrls = [
+      ["ACCOUNTING", `https://newsapi.org/v2/everything?q=accounting%20OR%20audit%20OR%20bookkeeping%20OR%20CFO&language=en&sortBy=publishedAt&pageSize=5`],
+      ["AI", `https://newsapi.org/v2/everything?q=artificial%20intelligence%20OR%20generative%20AI%20OR%20machine%20learning%20OR%20AI%20agents&language=en&sortBy=publishedAt&pageSize=5`],
+      ["FINTECH", `https://newsapi.org/v2/everything?q=fintech%20OR%20digital%20payments%20OR%20UPI%20OR%20neobank%20OR%20embedded%20finance&language=en&sortBy=publishedAt&pageSize=5`],
+      ["BANKING", `https://newsapi.org/v2/everything?q=banking%20OR%20banks%20OR%20central%20bank%20OR%20lending%20OR%20credit&language=en&sortBy=publishedAt&pageSize=5`],
+      ["MARKETS", `https://newsapi.org/v2/everything?q=stock%20market%20OR%20markets%20OR%20equities%20OR%20commodities%20OR%20bonds&language=en&sortBy=publishedAt&pageSize=5`]
+    ];
     const everythingUrl = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=50`;
     const headlinesUrl = `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=50`;
 
@@ -34,31 +41,24 @@ export default async function handler(req, res) {
       return { response, body };
     };
 
-    let { response: upstream, body: data } = await request(headlinesUrl);
+    const results = await Promise.all(categoryUrls.map(async ([tag, url]) => {
+      const { response, body } = await request(url);
+      if (!response.ok || body.status !== "ok") return [];
+      return (body.articles || [])
+        .filter(article => article?.title && article?.url && article.title !== "[Removed]")
+        .map(article => ({
+          tag,
+          source: article.source?.name || "NEWS SOURCE",
+          time: formatDate(article.publishedAt),
+          title: String(article.title).trim(),
+          summary: article.description || "Latest development in finance, accounting and financial technology.",
+          url: article.url
+        }));
+    }));
 
-    if (!upstream.ok || data.status !== "ok" || !Array.isArray(data.articles) || !data.articles.length) {
-      const fallback = await request(everythingUrl);
-      upstream = fallback.response;
-      data = fallback.body;
-    }
-
-    if (!upstream.ok || data.status !== "ok") {
-      return res.status(upstream.ok ? 502 : upstream.status).json({
-        error: data?.message || `NewsAPI request failed (${upstream.status})`
-      });
-    }
-
-    const news = (data.articles || [])
-      .filter(article => article?.title && article?.url && article.title !== "[Removed]")
-      .map(article => ({
-        tag: classify(`${article.title} ${article.description || ""}`),
-        source: article.source?.name || "NEWS SOURCE",
-        time: formatDate(article.publishedAt),
-        title: String(article.title).trim(),
-        summary: article.description || "Latest development in finance, accounting and financial technology.",
-        url: article.url
-      }))
-      .slice(0, 20);
+    const news = results
+      .flat()
+      .sort((a, b) => new Date(b.time) - new Date(a.time));
 
     return res.status(200).setHeader("Cache-Control", "no-store").json({
       updatedAt: new Date().toISOString(),
