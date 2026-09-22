@@ -24,11 +24,3 @@
 .ai-chat-form button:disabled{opacity:.45;cursor:wait}
 .ai-chat-note{margin-top:10px;color:#555;font:9px "DM Mono",monospace;letter-spacing:.04em}
 @media(max-width:900px){.ai-chat-header{display:block}.ai-chat-status{display:inline-block;margin-top:18px}.ai-chat-form{grid-template-columns:1fr}.ai-chat-form button{height:44px}}
-
-/* Commerce AI picture-in-picture mode */
-.ai-chat-panel.chat-pip{position:fixed;right:24px;bottom:24px;width:min(430px,calc(100vw - 48px));max-height:min(650px,calc(100vh - 110px));margin:0;padding:22px;background:#080808;border:1px solid #333;box-shadow:0 24px 70px rgba(0,0,0,.65);z-index:1000;overflow:auto}
-.ai-chat-panel.chat-pip .ai-chat-messages{max-height:270px}
-.ai-chat-pip-close{display:none}
-.chat-pip .ai-chat-pip-close{display:block;position:absolute;right:16px;top:13px;border:0;background:none;color:#777;font-size:22px;cursor:pointer}
-.chat-pip .ai-chat-pip-close:hover{color:#39FF14}
-@media(max-width:900px){.ai-chat-panel.chat-pip{right:12px;bottom:12px;width:calc(100vw - 24px);max-height:calc(100vh - 80px)}.ai-chat-panel.chat-pip .ai-chat-messages{max-height:240px}}
