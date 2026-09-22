@@ -2,25 +2,3 @@
 /* V6 editorial polish */
 ::selection{background:#39ff14;color:#050505}.site-header .brand{font-size:28px}.site-header nav a{transition:color .2s,opacity .2s}.site-header nav a[href="case-studies.html"]{color:#ddd}.hero{position:relative;overflow:hidden}.hero:after{content:"01";position:absolute;right:7vw;bottom:35px;font:italic 190px Georgia,serif;color:#111;z-index:0;pointer-events:none}.hero>*{position:relative;z-index:1}.hero h1{max-width:1000px}.feature{transition:background .25s}.feature:hover,.case-card:hover,.news-card:hover,.insight-grid article:hover{background:#0c0c0c}.feature-image{position:relative;overflow:hidden}.feature-image:after{content:"FINANCE / INTELLIGENCE / 2026";position:absolute;bottom:14px;left:16px;font:9px "DM Mono",monospace;color:#555}.case-card{cursor:pointer;transition:background .2s}.case-card:after{content:"VIEW CASE ↗";margin-top:18px;color:#39ff14;font:9px "DM Mono",monospace;letter-spacing:.12em;opacity:0;transition:.2s}.case-card:hover:after{opacity:1}.news-card{transition:background .2s;cursor:pointer}.market-grid div{position:relative;overflow:hidden}.market-grid strong{font-size:30px}.sparkline{position:absolute;right:18px;bottom:10px;width:58%;height:48px;opacity:.45}.sparkline polyline{fill:none;stroke:#050505;stroke-width:2}.insight-grid article{transition:background .2s}.reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s ease}.reveal.visible{opacity:1;transform:none}
 @media(max-width:900px){.hero:after{font-size:110px;right:15px}.market-grid div{min-height:155px}.sparkline{width:70%}}
-
-/* Commerce AI Desk */
-.ai-chat-panel{margin-top:55px;border-top:1px solid #292929;padding-top:38px}
-.ai-chat-header{display:flex;justify-content:space-between;gap:30px;align-items:flex-start}
-.ai-chat-header h3{font:600 clamp(34px,4vw,54px)/.95 Georgia,serif;letter-spacing:-.045em;margin:12px 0 0}
-.ai-chat-header h3 em{font-style:italic;color:#39FF14}
-.ai-chat-status{font:700 9px "DM Mono",monospace;letter-spacing:.14em;color:#39FF14;border:1px solid #294129;padding:8px 10px;white-space:nowrap}
-.ai-chat-intro{max-width:700px;color:#888;font-size:13px;margin:22px 0 28px}
-.ai-chat-messages{min-height:180px;max-height:390px;overflow:auto;border-top:1px solid #1f1f1f;border-bottom:1px solid #1f1f1f}
-.ai-message{padding:20px 0;border-bottom:1px solid #161616}
-.ai-message:last-child{border-bottom:0}
-.ai-message-label{display:block;color:#39FF14;font:700 9px "DM Mono",monospace;letter-spacing:.12em;margin-bottom:8px}
-.ai-message p{margin:0;color:#ddd;font-size:14px;line-height:1.7;white-space:pre-wrap}
-.ai-message-user p{color:#aaa}
-.ai-message-loading p{color:#666}
-.ai-chat-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-top:18px}
-.ai-chat-form input{width:100%;background:#111;border:1px solid #333;color:#fff;padding:14px 15px;outline:none;font-size:13px}
-.ai-chat-form input:focus{border-color:#39FF14}
-.ai-chat-form button{background:#39FF14;border:0;color:#050505;padding:0 20px;font:700 10px "DM Mono",monospace;letter-spacing:.08em;cursor:pointer}
-.ai-chat-form button:disabled{opacity:.45;cursor:wait}
-.ai-chat-note{margin-top:10px;color:#555;font:9px "DM Mono",monospace;letter-spacing:.04em}
-@media(max-width:900px){.ai-chat-header{display:block}.ai-chat-status{display:inline-block;margin-top:18px}.ai-chat-form{grid-template-columns:1fr}.ai-chat-form button{height:44px}}
