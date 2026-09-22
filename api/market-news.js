@@ -1,17 +1,11 @@
-export default async function handler(request) {
-  if (request.method !== "GET") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "content-type": "application/json" }
-    });
+export default async function handler(req, res) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const apiKey = process.env.NEWS_API_KEY;
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: "NEWS_API_KEY is not configured" }), {
-      status: 500,
-      headers: { "content-type": "application/json" }
-    });
+    return res.status(500).json({ error: "NEWS_API_KEY is not configured" });
   }
 
   const controller = new AbortController();
@@ -37,11 +31,8 @@ export default async function handler(request) {
     const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok || data.status !== "ok") {
-      return new Response(JSON.stringify({
+      return res.status(upstream.ok ? 502 : upstream.status).json({
         error: data?.message || `NewsAPI request failed (${upstream.status})`
-      }), {
-        status: upstream.ok ? 502 : upstream.status,
-        headers: { "content-type": "application/json" }
       });
     }
 
@@ -51,31 +42,20 @@ export default async function handler(request) {
         tag: classify(`${article.title} ${article.description || ""}`),
         source: article.source?.name || "NEWS SOURCE",
         time: formatDate(article.publishedAt),
-        title: cleanTitle(article.title),
+        title: String(article.title).trim(),
         summary: article.description || "Latest development in finance, accounting and financial technology.",
         url: article.url
       }))
       .slice(0, 20);
 
-    return new Response(JSON.stringify({
+    return res.status(200).setHeader("Cache-Control", "no-store").json({
       updatedAt: new Date().toISOString(),
       news,
       markets: []
-    }), {
-      status: 200,
-      headers: {
-        "content-type": "application/json",
-        "cache-control": "no-store"
-      }
     });
   } catch (error) {
-    const message = error?.name === "AbortError"
-      ? "News provider timed out"
-      : (error?.message || "News service error");
-
-    return new Response(JSON.stringify({ error: message }), {
-      status: 502,
-      headers: { "content-type": "application/json" }
+    return res.status(502).json({
+      error: error?.name === "AbortError" ? "News provider timed out" : (error?.message || "News service error")
     });
   } finally {
     clearTimeout(timeout);
@@ -89,10 +69,6 @@ function classify(text) {
   if (/(bank|banking|lender|credit)/.test(t)) return "BANKING";
   if (/(accounting|audit|reconciliation|financial close|cfo|bookkeeping)/.test(t)) return "ACCOUNTING";
   return "MARKETS";
-}
-
-function cleanTitle(title) {
-  return String(title || "").trim();
 }
 
 function formatDate(value) {
