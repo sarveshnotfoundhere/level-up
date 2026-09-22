@@ -1,36 +1,28 @@
-export default async function handler(request) {
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "content-type": "application/json" }
-    });
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const body = await request.json().catch(() => ({}));
+    const body = req.body || {};
     const message = typeof body.message === "string" ? body.message.trim() : "";
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const commercePattern = /\b(accounting|accountancy|finance|financial|fintech|banking|bank|economics|economic|commerce|business|tax|taxation|audit|auditing|investment|investing|stock market|market|capital|credit|debit|insurance|upi|payment|payments|blockchain|cryptocurrency|crypto|budget|budgeting|revenue|profit|loss|balance sheet|income statement|cash flow|ledger|bookkeeping|bookkeeping|erp|rpa|regtech|wealthtech|corporate finance|financial accounting|cost accounting|management accounting|microeconomics|macroeconomics|entrepreneurship|supply chain|trade|gst|tally|cma|ca foundation|chartered accountant)\b/i;
+    const commercePattern = /\b(accounting|accountancy|finance|financial|fintech|banking|bank|economics|economic|commerce|business|tax|taxation|audit|auditing|investment|investing|stock market|market|capital|credit|debit|insurance|upi|payment|payments|blockchain|cryptocurrency|crypto|budget|budgeting|revenue|profit|loss|balance sheet|income statement|cash flow|ledger|bookkeeping|erp|rpa|regtech|wealthtech|corporate finance|financial accounting|cost accounting|management accounting|microeconomics|macroeconomics|entrepreneurship|supply chain|trade|gst|tally|cma|ca foundation|chartered accountant)\b/i;
+
     if (!commercePattern.test(message)) {
-      return new Response(JSON.stringify({
+      return res.status(422).json({
         error: "I’m the LEVEL UP Commerce Desk. Please ask a question related to commerce, accounting, finance, economics, business, taxation, banking, fintech or related fields."
-      }), {
-        status: 422,
-        headers: { "content-type": "application/json" }
       });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return new Response(JSON.stringify({
+      return res.status(500).json({
         error: "OPENAI_API_KEY is not configured in this Vercel deployment"
-      }), {
-        status: 500,
-        headers: { "content-type": "application/json" }
       });
     }
 
@@ -42,7 +34,7 @@ export default async function handler(request) {
       },
       body: JSON.stringify({
         model: "gpt-5-mini",
-        instructions: "You are LEVEL UP AI, a financial intelligence and accounting technology assistant for university students. Answer questions about accounting, finance, fintech, AI in finance, audit, financial technology and related academic topics. Be accurate, clear and practical. Do not invent current figures or claim live information unless provided in the prompt. Explain concepts with examples when useful.",
+        instructions: "You are LEVEL UP AI, a commerce and financial intelligence assistant. You ONLY answer questions about commerce-related subjects such as accounting, finance, economics, business, taxation, banking, fintech, audit, investments, markets, payments and commerce technology. Refuse unrelated questions briefly. Be accurate, clear and practical for university students. Do not invent current figures or claim live information unless provided in the prompt.",
         input: message
       })
     });
@@ -50,11 +42,8 @@ export default async function handler(request) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      return new Response(JSON.stringify({
+      return res.status(response.status).json({
         error: data?.error?.message || `OpenAI request failed (${response.status})`
-      }), {
-        status: response.status,
-        headers: { "content-type": "application/json" }
       });
     }
 
@@ -66,18 +55,12 @@ export default async function handler(request) {
           .join("")
           .trim();
 
-    return new Response(JSON.stringify({
+    return res.status(200).json({
       answer: answer || "No answer returned from OpenAI."
-    }), {
-      status: 200,
-      headers: { "content-type": "application/json" }
     });
   } catch (error) {
-    return new Response(JSON.stringify({
+    return res.status(500).json({
       error: error?.message || "AI service error"
-    }), {
-      status: 500,
-      headers: { "content-type": "application/json" }
     });
   }
 }
