@@ -1,6 +1,9 @@
 const aiForm=document.getElementById("aiChatForm");
 const aiInput=document.getElementById("aiChatInput");
 const aiMessages=document.getElementById("aiChatMessages");
+const aiPanel=document.getElementById("aiChatPanel");
+const aiPipClose=document.getElementById("aiChatPipClose");
+let pipActive=false;
 
 function addAiMessage(role,text){
   const el=document.createElement("div");
@@ -51,3 +54,17 @@ aiForm?.addEventListener("submit",async e=>{
     aiInput.focus();
   }
 });
+
+
+function enterAiPip(){
+  if(!aiPanel||pipActive)return;
+  aiPanel.classList.add("chat-pip");
+  pipActive=true;
+}
+function exitAiPip(){
+  if(!aiPanel)return;
+  aiPanel.classList.remove("chat-pip");
+  pipActive=false;
+}
+aiInput?.addEventListener("focus",enterAiPip);
+aiPipClose?.addEventListener("click",exitAiPip);
