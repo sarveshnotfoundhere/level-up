@@ -13,15 +13,18 @@ export default async function handler(req, res) {
 
   try {
     const query = encodeURIComponent(
-      'accounting OR fintech OR "artificial intelligence" OR banking OR "digital payments" OR audit'
+      '(accounting OR fintech OR banking OR audit OR "digital payments" OR "artificial intelligence" OR markets OR finance)'
     );
 
-    const url = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=20`;
+    const today = new Date();
+    const from = new Date(today.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const url = `https://newsapi.org/v2/everything?q=${query}&from=${encodeURIComponent(from)}&language=en&sortBy=publishedAt&pageSize=50`;
 
     const upstream = await fetch(url, {
       method: "GET",
       headers: {
         "X-Api-Key": apiKey,
+        "X-No-Cache": "true",
         "Accept": "application/json"
       },
       signal: controller.signal,
