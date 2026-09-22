@@ -7,3 +7,32 @@
 body{cursor:url("cursor.svg") 8 8, auto}
 a,button,.button,.text-link,.case-card,.news-card,.filter,.search-btn{cursor:url("cursor-pointer.svg") 8 8, pointer}
 a:hover,button:hover,.button:hover,.text-link:hover,.case-card:hover,.news-card:hover,.filter:hover,.search-btn:hover{cursor:url("cursor-active.svg") 8 8, pointer}
+
+/* Live Global Markets */
+.live-markets{padding:105px 8vw;border-bottom:1px solid #292929;background:#060606}
+.market-board-head{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #292929;border-bottom:1px solid #292929;padding:14px 0;color:#777;font:500 10px "DM Mono",monospace;letter-spacing:.12em}
+.market-board-head-spaced{margin-top:58px}
+.money-grid{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #292929}
+.money-card{min-height:155px;padding:22px 20px 20px 0;border-right:1px solid #292929;margin-right:20px;display:flex;flex-direction:column;justify-content:space-between}
+.money-card:nth-child(5n){border-right:0;margin-right:0}
+.money-card .money-top{display:flex;justify-content:space-between;gap:12px}
+.money-card .currency-name{font:500 10px "DM Mono",monospace;color:#777;letter-spacing:.06em}
+.money-card .currency-rank{font:10px "DM Mono",monospace;color:#444}
+.money-card h3{font:26px/.95 Georgia,serif;margin:18px 0 6px}
+.money-card .money-value{font:13px "DM Mono",monospace;color:#bbb}
+.money-card .money-change{font:700 11px "DM Mono",monospace;margin-top:9px}
+.money-card.up .money-change,.global-market-card.up .market-change{color:#39FF14}
+.money-card.down .money-change,.global-market-card.down .market-change{color:#ff4d4d}
+.money-card.up h3,.global-market-card.up .market-price{color:#f2f0e9}
+.money-card.down h3,.global-market-card.down .market-price{color:#ffb0b0}
+.global-market-grid{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #292929}
+.global-market-card{min-height:175px;padding:24px 20px 20px 0;border-right:1px solid #292929;margin-right:20px;display:flex;flex-direction:column}
+.global-market-card:nth-child(4n){border-right:0;margin-right:0}
+.global-market-card .market-type{font:10px "DM Mono",monospace;color:#39FF14;letter-spacing:.12em}
+.global-market-card h3{font:25px/.98 Georgia,serif;margin:28px 0 8px}
+.global-market-card .market-price{font:21px "DM Mono",monospace}
+.global-market-card .market-change{font:700 11px "DM Mono",monospace;margin-top:10px}
+.global-market-card .market-time{margin-top:auto;color:#555;font:9px "DM Mono",monospace}
+.market-disclaimer{padding-top:16px;color:#555;font:10px/1.5 "DM Mono",monospace}
+@media(max-width:1000px){.money-grid{grid-template-columns:repeat(2,1fr)}.money-card:nth-child(5n){border-right:1px solid #292929;margin-right:20px}.money-card:nth-child(2n){border-right:0;margin-right:0}.global-market-grid{grid-template-columns:repeat(2,1fr)}.global-market-card:nth-child(4n){border-right:1px solid #292929;margin-right:20px}.global-market-card:nth-child(2n){border-right:0;margin-right:0}}
+@media(max-width:900px){.live-markets{padding:80px 8vw}.money-grid,.global-market-grid{grid-template-columns:1fr}.money-card,.money-card:nth-child(n),.global-market-card,.global-market-card:nth-child(n){border-right:0;border-bottom:1px solid #292929;margin:0;padding-right:0}.money-card:last-child,.global-market-card:last-child{border-bottom:0}.market-board-head{gap:20px}.market-board-head span:last-child{white-space:nowrap}}
