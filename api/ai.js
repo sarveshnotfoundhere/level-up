@@ -26,41 +26,51 @@ export default async function handler(req, res) {
       });
     }
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-5-mini",
-        instructions: "You are LEVEL UP AI, a commerce and financial intelligence assistant. You ONLY answer questions about commerce-related subjects such as accounting, finance, economics, business, taxation, banking, fintech, audit, investments, markets, payments and commerce technology. Refuse unrelated questions briefly. Be accurate, clear and practical for university students. Do not invent current figures or claim live information unless provided in the prompt.",
-        input: message
-      })
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
 
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: data?.error?.message || `OpenAI request failed (${response.status})`
+    try {
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-5-mini",
+          instructions: "You are LEVEL UP AI, a commerce and financial intelligence assistant for university students. ONLY answer questions related to commerce: accounting, finance, economics, business, taxation, banking, fintech, audit, investments, markets, payments, insurance, financial technology and closely related academic topics. For unrelated questions, politely refuse. Be accurate, clear, concise and practical. Do not invent current figures or claim live information unless provided by the user.",
+          input: message
+        }),
+        signal: controller.signal
       });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        return res.status(response.status).json({
+          error: data?.error?.message || `OpenAI request failed (${response.status})`
+        });
+      }
+
+      const answer = typeof data.output_text === "string" && data.output_text.trim()
+        ? data.output_text.trim()
+        : (data.output || [])
+            .flatMap(item => Array.isArray(item.content) ? item.content : [])
+            .map(part => part?.text || "")
+            .join("")
+            .trim();
+
+      return res.status(200).json({
+        answer: answer || "No answer returned from the AI service."
+      });
+    } finally {
+      clearTimeout(timeout);
     }
-
-    const answer = typeof data.output_text === "string" && data.output_text.trim()
-      ? data.output_text.trim()
-      : (data.output || [])
-          .flatMap(item => Array.isArray(item.content) ? item.content : [])
-          .map(part => part?.text || "")
-          .join("")
-          .trim();
-
-    return res.status(200).json({
-      answer: answer || "No answer returned from OpenAI."
-    });
   } catch (error) {
-    return res.status(500).json({
-      error: error?.message || "AI service error"
+    return res.status(502).json({
+      error: error?.name === "AbortError"
+        ? "The AI service took too long to respond. Please try again."
+        : (error?.message || "AI service error")
     });
   }
 }
