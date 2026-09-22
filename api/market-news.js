@@ -25,7 +25,8 @@ export default async function handler(request) {
       headers: {
         "X-Api-Key": apiKey,
         "Accept": "application/json"
-      }
+      },
+      cache: "no-store"
     });
 
     const data = await upstream.json().catch(() => ({}));
@@ -45,17 +46,24 @@ export default async function handler(request) {
         tag: classify(article.title + " " + (article.description || "")),
         source: article.source?.name || "NEWS SOURCE",
         time: formatDate(article.publishedAt),
-        title: article.title,
+        publishedAt: article.publishedAt || "",
+        title: cleanTitle(article.title),
         summary: article.description || "Latest development in finance, accounting and financial technology.",
-        url: article.url
+        url: article.url,
+        image: article.urlToImage || ""
       }))
+      .filter(article => article.title && article.title !== "[Removed]")
       .slice(0, 20);
 
-    return new Response(JSON.stringify({ news, markets: [] }), {
+    return new Response(JSON.stringify({
+      updatedAt: new Date().toISOString(),
+      news,
+      markets: []
+    }), {
       status: 200,
       headers: {
         "content-type": "application/json",
-        "cache-control": "s-maxage=300, stale-while-revalidate=600"
+        "cache-control": "no-store, max-age=0"
       }
     });
   } catch (error) {
@@ -70,11 +78,17 @@ export default async function handler(request) {
 
 function classify(text) {
   const t = text.toLowerCase();
-  if (/(ai|artificial intelligence|machine learning|generative)/.test(t)) return "AI";
+  if (/(ai|artificial intelligence|machine learning|generative|agentic)/.test(t)) return "AI";
   if (/(payment|upi|fintech|digital wallet|embedded finance)/.test(t)) return "FINTECH";
   if (/(bank|banking|lender|credit)/.test(t)) return "BANKING";
-  if (/(accounting|audit|reconciliation|financial close|cfo)/.test(t)) return "ACCOUNTING";
+  if (/(accounting|audit|reconciliation|financial close|cfo|bookkeeping)/.test(t)) return "ACCOUNTING";
   return "MARKETS";
+}
+
+function cleanTitle(title) {
+  return String(title || "")
+    .replace(/\s*[-|]\s*[^-|]{1,80}$/,"")
+    .trim();
 }
 
 function formatDate(value) {
