@@ -17,11 +17,11 @@ export default async function handler(req, res) {
     );
 
     const categoryUrls = [
-      ["ACCOUNTING", `https://newsapi.org/v2/everything?q=accounting%20OR%20audit%20OR%20bookkeeping%20OR%20CFO&language=en&sortBy=publishedAt&pageSize=5`],
-      ["AI", `https://newsapi.org/v2/everything?q=artificial%20intelligence%20OR%20generative%20AI%20OR%20machine%20learning%20OR%20AI%20agents&language=en&sortBy=publishedAt&pageSize=5`],
-      ["FINTECH", `https://newsapi.org/v2/everything?q=fintech%20OR%20digital%20payments%20OR%20UPI%20OR%20neobank%20OR%20embedded%20finance&language=en&sortBy=publishedAt&pageSize=5`],
-      ["BANKING", `https://newsapi.org/v2/everything?q=banking%20OR%20banks%20OR%20central%20bank%20OR%20lending%20OR%20credit&language=en&sortBy=publishedAt&pageSize=5`],
-      ["MARKETS", `https://newsapi.org/v2/everything?q=stock%20market%20OR%20markets%20OR%20equities%20OR%20commodities%20OR%20bonds&language=en&sortBy=publishedAt&pageSize=5`]
+      ["ACCOUNTING", `https://newsapi.org/v2/everything?q=accounting%20OR%20audit%20OR%20bookkeeping%20OR%20CFO&from=${encodeURIComponent(new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())}&language=en&sortBy=publishedAt&pageSize=5`],
+      ["AI", `https://newsapi.org/v2/everything?q=artificial%20intelligence%20OR%20generative%20AI%20OR%20machine%20learning%20OR%20AI%20agents&from=${encodeURIComponent(new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())}&language=en&sortBy=publishedAt&pageSize=5`],
+      ["FINTECH", `https://newsapi.org/v2/everything?q=fintech%20OR%20digital%20payments%20OR%20UPI%20OR%20neobank%20OR%20embedded%20finance&from=${encodeURIComponent(new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())}&language=en&sortBy=publishedAt&pageSize=5`],
+      ["BANKING", `https://newsapi.org/v2/everything?q=banking%20OR%20banks%20OR%20central%20bank%20OR%20lending%20OR%20credit&from=${encodeURIComponent(new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())}&language=en&sortBy=publishedAt&pageSize=5`],
+      ["MARKETS", `https://newsapi.org/v2/everything?q=stock%20market%20OR%20markets%20OR%20equities%20OR%20commodities%20OR%20bonds&from=${encodeURIComponent(new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString())}&language=en&sortBy=publishedAt&pageSize=5`]
     ];
     const everythingUrl = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=50`;
     const headlinesUrl = `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=50`;
