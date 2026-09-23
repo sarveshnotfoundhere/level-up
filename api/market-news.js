@@ -41,12 +41,22 @@ export default async function handler(req, res) {
       return { response, body };
     };
 
-    const now = new Date();
-    const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString();
+    const indiaNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const startOfTodayIST = new Date(
+      indiaNow.getFullYear(),
+      indiaNow.getMonth(),
+      indiaNow.getDate(),
+      0, 0, 0, 0
+    );
+    const endOfTodayIST = new Date(startOfTodayIST);
+    endOfTodayIST.setDate(endOfTodayIST.getDate() + 1);
+
+    const from = startOfTodayIST.toISOString();
+    const to = endOfTodayIST.toISOString();
 
     const results = await Promise.all(categoryUrls.map(async ([tag, search]) => {
       const q = encodeURIComponent(search);
-      const url = `https://newsapi.org/v2/everything?q=${q}&from=${encodeURIComponent(threeHoursAgo)}&to=${encodeURIComponent(now.toISOString())}&language=en&sortBy=publishedAt&pageSize=5`;
+      const url = `https://newsapi.org/v2/everything?q=${q}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&language=en&sortBy=publishedAt&pageSize=5`;
       const { response, body } = await request(url);
       if (!response.ok || body.status !== "ok") return [];
       return (body.articles || [])
