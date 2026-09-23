@@ -1,7 +1,7 @@
 const LIVE_CONFIG = {
   enabled: true,
   endpoint: "/api/market-news",
-  refreshMs: 1800000
+  refreshMs: 10800000
 };
 
 const newsStories = [
