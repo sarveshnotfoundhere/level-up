@@ -12,86 +12,32 @@ export default async function handler(req, res) {
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
-    const query = encodeURIComponent(
-      '(accounting OR fintech OR banking OR audit OR "digital payments" OR "artificial intelligence" OR markets OR finance)'
-    );
-
-    const categoryUrls = [
-      ["ACCOUNTING", "accounting OR audit OR bookkeeping OR CFO"],
-      ["AI", "artificial intelligence OR generative AI OR machine learning OR AI agents"],
-      ["FINTECH", "fintech OR digital payments OR UPI OR neobank OR embedded finance"],
-      ["BANKING", "banking OR banks OR central bank OR lending OR credit"],
-      ["MARKETS", "stock market OR markets OR equities OR commodities OR bonds"]
+    const feeds = [
+      ["ACCOUNTING", "https://www.accountingtoday.com/feed"],
+      ["AI", "https://techcrunch.com/tag/artificial-intelligence/feed/"],
+      ["FINTECH", "https://www.finextra.com/rss/headlines.aspx"],
+      ["BANKING", "https://www.finextra.com/rss/headlines.aspx"],
+      ["MARKETS", "https://feeds.marketwatch.com/marketwatch/topstories/"]
     ];
-    const everythingUrl = `https://newsapi.org/v2/everything?q=${query}&language=en&sortBy=publishedAt&pageSize=50`;
-    const headlinesUrl = `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=50`;
 
-    const request = async (url) => {
+    const fetchFeed = async (tag, url) => {
       const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "X-Api-Key": apiKey,
-          "X-No-Cache": "true",
-          "Accept": "application/json"
-        },
+        headers: { "Accept": "application/rss+xml, application/xml, text/xml" },
         signal: controller.signal,
         cache: "no-store"
       });
-      const body = await response.json().catch(() => ({}));
-      return { response, body };
+      if (!response.ok) return [];
+      const xml = await response.text();
+      return parseRss(xml, tag);
     };
 
-    const indiaNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-    const startOfTodayIST = new Date(
-      indiaNow.getFullYear(),
-      indiaNow.getMonth(),
-      indiaNow.getDate(),
-      0, 0, 0, 0
-    );
-    const endOfTodayIST = new Date(startOfTodayIST);
-    endOfTodayIST.setDate(endOfTodayIST.getDate() + 1);
-
-    const from = startOfTodayIST.toISOString();
-    const to = endOfTodayIST.toISOString();
-
-    const results = await Promise.all(categoryUrls.map(async ([tag, search]) => {
-      const q = encodeURIComponent(search);
-      const url = `https://newsapi.org/v2/everything?q=${q}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&language=en&sortBy=publishedAt&pageSize=5`;
-      const { response, body } = await request(url);
-      if (!response.ok || body.status !== "ok") return [];
-      return (body.articles || [])
-        .filter(article => article?.title && article?.url && article.title !== "[Removed]")
-        .map(article => ({
-          tag,
-          source: article.source?.name || "NEWS SOURCE",
-          time: formatDate(article.publishedAt),
-          title: String(article.title).trim(),
-          summary: article.description || "Latest development in finance, accounting and financial technology.",
-          url: article.url,
-          publishedAt: article.publishedAt
-        }));
-    }));
-
-    const news = results
-      .flat()
-      .sort((a, b) => new Date(b.publishedAt || b.time) - new Date(a.publishedAt || a.time))
-      .map(({publishedAt, ...article}) => article);
+    const results = await Promise.all(feeds.map(([tag, url]) => fetchFeed(tag, url)));
+    const news = results.flat()
+      .filter(article => article?.title && article?.url)
+      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
     if (!news.length) {
-      const fallback = await request(headlinesUrl);
-      if (fallback.response.ok && fallback.body.status === "ok") {
-        news.push(...(fallback.body.articles || [])
-          .filter(article => article?.title && article?.url && article.title !== "[Removed]")
-          .map(article => ({
-            tag: classify(`${article.title} ${article.description || ""}`),
-            source: article.source?.name || "NEWS SOURCE",
-            time: formatDate(article.publishedAt),
-            title: String(article.title).trim(),
-            summary: article.description || "Latest development in finance, accounting and financial technology.",
-            url: article.url
-          }))
-          .slice(0, 25));
-      }
+      return res.status(502).json({ error: "No current news available" });
     }
 
     return res.status(200).setHeader("Cache-Control", "no-store").json({
@@ -106,6 +52,48 @@ export default async function handler(req, res) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function parseRss(xml, forcedTag) {
+  const items = xml.match(/<item[\\s\\S]*?<\\/item>/gi) || [];
+  return items.map(item => {
+    const title = decodeXml(matchTag(item, "title"));
+    const url = decodeXml(matchTag(item, "link"));
+    const description = decodeXml(matchTag(item, "description"));
+    const publishedAt = matchTag(item, "pubDate") || matchTag(item, "published") || matchTag(item, "updated");
+    const source = decodeXml(matchTag(item, "source")) || "NEWS SOURCE";
+    if (!title || !url || !publishedAt) return null;
+    return {
+      tag: forcedTag,
+      source,
+      time: formatDate(publishedAt),
+      title,
+      summary: stripHtml(description) || "Latest development in finance, accounting and financial technology.",
+      url,
+      publishedAt
+    };
+  }).filter(Boolean).slice(0, 5);
+}
+
+function matchTag(xml, tag) {
+  const re = new RegExp(`<${tag}[^>]*>([\\\\s\\\\S]*?)<\\/${tag}>`, "i");
+  const m = xml.match(re);
+  return m ? m[1].trim() : "";
+}
+
+function decodeXml(value) {
+  return String(value || "")
+    .replace(/<!\\[CDATA\\[/g, "")
+    .replace(/\\]\\]>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function stripHtml(value) {
+  return String(value || "").replace(/<[^>]*>/g, "").trim();
 }
 
 function classify(text) {
