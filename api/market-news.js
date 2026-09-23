@@ -12,33 +12,48 @@ export default async function handler(req, res) {
   const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
-    const feeds = [
-      ["ACCOUNTING", "https://www.accountingtoday.com/feed"],
-      ["AI", "https://techcrunch.com/tag/artificial-intelligence/feed/"],
-      ["FINTECH", "https://www.finextra.com/rss/headlines.aspx"],
-      ["BANKING", "https://www.finextra.com/rss/headlines.aspx"],
-      ["MARKETS", "https://feeds.marketwatch.com/marketwatch/topstories/"]
+    const categoryQueries = [
+      ["ACCOUNTING", "accounting OR audit OR bookkeeping OR CFO"],
+      ["AI", "artificial intelligence OR generative AI OR machine learning OR AI agents"],
+      ["FINTECH", "fintech OR digital payments OR UPI OR neobank OR embedded finance"],
+      ["BANKING", "banking OR banks OR central bank OR lending OR credit"],
+      ["MARKETS", "stock market OR markets OR equities OR commodities OR bonds"]
     ];
 
-    const fetchFeed = async (tag, url) => {
+    const request = async (url) => {
       const response = await fetch(url, {
-        headers: { "Accept": "application/rss+xml, application/xml, text/xml" },
+        method: "GET",
+        headers: {
+          "X-Api-Key": apiKey,
+          "Accept": "application/json"
+        },
         signal: controller.signal,
         cache: "no-store"
       });
-      if (!response.ok) return [];
-      const xml = await response.text();
-      return parseRss(xml, tag);
+      const body = await response.json().catch(() => ({}));
+      return { response, body };
     };
 
-    const results = await Promise.all(feeds.map(([tag, url]) => fetchFeed(tag, url)));
-    const news = results.flat()
-      .filter(article => article?.title && article?.url)
-      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    const results = await Promise.all(categoryQueries.map(async ([tag, search]) => {
+      const q = encodeURIComponent(search);
+      const url = `https://newsapi.org/v2/everything?q=${q}&language=en&sortBy=publishedAt&pageSize=10`;
+      const { response, body } = await request(url);
+      if (!response.ok || body.status !== "ok") return [];
 
-    if (!news.length) {
-      return res.status(502).json({ error: "No current news available" });
-    }
+      return (body.articles || [])
+        .filter(article => article?.title && article?.url && article.title !== "[Removed]")
+        .map(article => ({
+          tag,
+          source: article.source?.name || "NEWS SOURCE",
+          time: formatDate(article.publishedAt),
+          title: String(article.title).trim(),
+          summary: article.description || "Latest development in finance, accounting and financial technology.",
+          url: article.url
+        }))
+        .slice(0, 5);
+    }));
+
+    const news = results.flat();
 
     return res.status(200).setHeader("Cache-Control", "no-store").json({
       updatedAt: new Date().toISOString(),
@@ -52,57 +67,6 @@ export default async function handler(req, res) {
   } finally {
     clearTimeout(timeout);
   }
-}
-
-function parseRss(xml, forcedTag) {
-  const items = xml.match(/<item[\\s\\S]*?<\\/item>/gi) || [];
-  return items.map(item => {
-    const title = decodeXml(matchTag(item, "title"));
-    const url = decodeXml(matchTag(item, "link"));
-    const description = decodeXml(matchTag(item, "description"));
-    const publishedAt = matchTag(item, "pubDate") || matchTag(item, "published") || matchTag(item, "updated");
-    const source = decodeXml(matchTag(item, "source")) || "NEWS SOURCE";
-    if (!title || !url || !publishedAt) return null;
-    return {
-      tag: forcedTag,
-      source,
-      time: formatDate(publishedAt),
-      title,
-      summary: stripHtml(description) || "Latest development in finance, accounting and financial technology.",
-      url,
-      publishedAt
-    };
-  }).filter(Boolean).slice(0, 5);
-}
-
-function matchTag(xml, tag) {
-  const re = new RegExp(`<${tag}[^>]*>([\\\\s\\\\S]*?)<\\/${tag}>`, "i");
-  const m = xml.match(re);
-  return m ? m[1].trim() : "";
-}
-
-function decodeXml(value) {
-  return String(value || "")
-    .replace(/<!\\[CDATA\\[/g, "")
-    .replace(/\\]\\]>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}
-
-function stripHtml(value) {
-  return String(value || "").replace(/<[^>]*>/g, "").trim();
-}
-
-function classify(text) {
-  const t = text.toLowerCase();
-  if (/(ai|artificial intelligence|machine learning|generative|agentic)/.test(t)) return "AI";
-  if (/(payment|upi|fintech|digital wallet|embedded finance)/.test(t)) return "FINTECH";
-  if (/(bank|banking|lender|credit)/.test(t)) return "BANKING";
-  if (/(accounting|audit|reconciliation|financial close|cfo|bookkeeping)/.test(t)) return "ACCOUNTING";
-  return "MARKETS";
 }
 
 function formatDate(value) {
